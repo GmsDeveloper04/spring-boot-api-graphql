@@ -1,0 +1,13 @@
+type Author {
+    fullname: String,
+    email: String
+    books: [Book]
+}
+
+type Book {
+    isbn: String,
+    title: String!
+    subject: String!
+    author: Author!
+    chiclete: String
+}

@@ -1,0 +1,9 @@
+input BookInput {
+    title: String!
+    subject: String!
+}
+
+input AuthorInput {
+    fullname: String,
+    email: String
+}

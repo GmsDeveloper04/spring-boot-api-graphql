@@ -1,0 +1,3 @@
+type Query {
+    findBook(isbn: String): Book
+}
