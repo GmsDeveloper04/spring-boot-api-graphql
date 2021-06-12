@@ -46,6 +46,14 @@
 			<artifactId>lombok</artifactId>
 			<optional>true</optional>
 		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/com.graphql-java-kickstart/altair-spring-boot-starter -->
+		<dependency>
+		    <groupId>com.graphql-java-kickstart</groupId>
+		    <artifactId>altair-spring-boot-starter</artifactId>
+		    <version>11.1.0</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>

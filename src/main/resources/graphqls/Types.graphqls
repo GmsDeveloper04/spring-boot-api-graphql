@@ -10,4 +10,5 @@ type Book {
     subject: String!
     author: Author!
     chiclete: String
+    abacate: String
 }

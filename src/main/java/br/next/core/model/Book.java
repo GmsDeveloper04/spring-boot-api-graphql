@@ -16,6 +16,7 @@ public class Book {
     private LocalDate createdAt = LocalDate.now();
     private boolean active = true;
     private String chiclete;
+    private String abacate;
     
     public Book() {
     	this.isbn = UUID.randomUUID().toString();
