@@ -1,0 +1,361 @@
+[33mcommit 230a817bc11174b3bf647144dc2731ad669f4c2a[m[33m ([m[1;36mHEAD -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m)[m
+Author: Guilherme Maciel Siqueira <guimaciel@server01.foursys.local>
+Date:   Mon Jun 14 13:26:31 2021 -0300
+
+    incluindo progresso
+
+[1mdiff --git a/pom.xml b/pom.xml[m
+[1mindex 124210f..d3b0c37 100644[m
+[1m--- a/pom.xml[m
+[1m+++ b/pom.xml[m
+[36m@@ -41,19 +41,12 @@[m
+ 			<artifactId>graphql-java-tools</artifactId>[m
+ 			<version>5.2.4</version>[m
+ 		</dependency>[m
+[32m+[m[41m		[m
+ 		<dependency>[m
+ 			<groupId>org.projectlombok</groupId>[m
+ 			<artifactId>lombok</artifactId>[m
+ 			<optional>true</optional>[m
+ 		</dependency>[m
+[31m-		[m
+[31m-		<!-- https://mvnrepository.com/artifact/com.graphql-java-kickstart/altair-spring-boot-starter -->[m
+[31m-		<dependency>[m
+[31m-		    <groupId>com.graphql-java-kickstart</groupId>[m
+[31m-		    <artifactId>altair-spring-boot-starter</artifactId>[m
+[31m-		    <version>11.1.0</version>[m
+[31m-		</dependency>[m
+[31m-[m
+ 	</dependencies>[m
+ [m
+ 	<build>[m
+[1mdiff --git a/src/main/java/br/next/core/NextApiCoreApplication.java b/src/main/java/br/next/core/NextApiCoreApplication.java[m
+[1mindex 7dc2007..22a2510 100644[m
+[1m--- a/src/main/java/br/next/core/NextApiCoreApplication.java[m
+[1m+++ b/src/main/java/br/next/core/NextApiCoreApplication.java[m
+[36m@@ -8,6 +8,9 @@[m [mimport org.springframework.boot.autoconfigure.SpringBootApplication;[m
+ import org.springframework.context.annotation.Bean;[m
+ import org.springframework.context.annotation.Configuration;[m
+ [m
+[32m+[m[32mimport lombok.extern.slf4j.Slf4j;[m
+[32m+[m
+[32m+[m[32m@Slf4j[m
+ @SpringBootApplication[m
+ @Configuration[m
+ public class NextApiCoreApplication {[m
+[36m@@ -19,6 +22,8 @@[m [mpublic class NextApiCoreApplication {[m
+ 	[m
+ 	@Bean[m
+ 	public ExecutorService executor() {[m
+[32m+[m		[32mint availableProcessors = Runtime.getRuntime().availableProcessors();[m
+[32m+[m		[32mlog.info("Iniciando pool de threads fixado para {} processors",availableProcessors);[m
+ 		return Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());[m
+ 	}[m
+ [m
+[1mdiff --git a/src/main/java/br/next/core/exception/hadler/GraphQLErrorHandlerImpl.java b/src/main/java/br/next/core/exception/hadler/GraphQLErrorHandlerImpl.java[m
+[1mnew file mode 100644[m
+[1mindex 0000000..e466fe6[m
+[1m--- /dev/null[m
+[1m+++ b/src/main/java/br/next/core/exception/hadler/GraphQLErrorHandlerImpl.java[m
+[36m@@ -0,0 +1,28 @@[m
+[32m+[m[32mpackage br.next.core.exception.hadler;[m
+[32m+[m
+[32m+[m[32mimport java.util.List;[m
+[32m+[m[32mimport java.util.stream.Collectors;[m
+[32m+[m
+[32m+[m[32mimport org.springframework.http.HttpStatus;[m
+[32m+[m[32mimport org.springframework.stereotype.Component;[m
+[32m+[m[32mimport org.springframework.web.server.ResponseStatusException;[m
+[32m+[m
+[32m+[m[32mimport graphql.GraphQLError;[m
+[32m+[m[32mimport graphql.servlet.GraphQLErrorHandler;[m
+[32m+[m[32mimport lombok.extern.slf4j.Slf4j;[m
+[32m+[m
+[32m+[m[32m@Slf4j[m
+[32m+[m[32m@Component[m
+[32m+[m[32mpublic class GraphQLErrorHandlerImpl implements GraphQLErrorHandler {[m
+[32m+[m
+[32m+[m[32m    @Override[m
+[32m+[m[32m    public List<GraphQLError> processErrors(List<GraphQLError> graphQLErrors) {[m
+[32m+[m[32m        return graphQLErrors.stream().map(this::handleGraphQLError).collect(Collectors.toList());[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    private GraphQLError handleGraphQLError(GraphQLError error) {[m
+[32m+[m[41m    [m	[32mlog.error(error.getMessage(),error);[m
+[32m+[m[41m    [m	[32mthrow new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "ValidationError: " + error.getMessage());[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m}[m
+[1mdiff --git a/src/main/java/br/next/core/model/Book.java b/src/main/java/br/next/core/model/Book.java[m
+[1mindex fa1d240..ac44cbe 100644[m
+[1m--- a/src/main/java/br/next/core/model/Book.java[m
+[1m+++ b/src/main/java/br/next/core/model/Book.java[m
+[36m@@ -15,10 +15,12 @@[m [mpublic class Book {[m
+     private Author author;[m
+     private LocalDate createdAt = LocalDate.now();[m
+     private boolean active = true;[m
+[31m-    private String chiclete;[m
+[31m-    private String abacate;[m
+[32m+[m[32m    private String campoApiUm;[m
+[32m+[m[32m    private String campoApiDois;[m
+[32m+[m[32m    private String campoComputado;[m
+     [m
+     public Book() {[m
+     	this.isbn = UUID.randomUUID().toString();[m
+     }[m
+[32m+[m[41m   [m
+ }[m
+\ No newline at end of file[m
+[1mdiff --git a/src/main/java/br/next/core/resolvers/BookGraphQL.java b/src/main/java/br/next/core/resolvers/BookGraphQL.java[m
+[1mdeleted file mode 100644[m
+[1mindex db72c74..0000000[m
+[1m--- a/src/main/java/br/next/core/resolvers/BookGraphQL.java[m
+[1m+++ /dev/null[m
+[36m@@ -1,51 +0,0 @@[m
+[31m-package br.next.core.resolvers;[m
+[31m-[m
+[31m-import java.time.LocalDate;[m
+[31m-import java.util.Optional;[m
+[31m-[m
+[31m-import org.springframework.stereotype.Component;[m
+[31m-[m
+[31m-import com.coxautodev.graphql.tools.GraphQLMutationResolver;[m
+[31m-import com.coxautodev.graphql.tools.GraphQLQueryResolver;[m
+[31m-[m
+[31m-import br.next.core.model.Author;[m
+[31m-import br.next.core.model.Book;[m
+[31m-[m
+[31m-@Component[m
+[31m-public class BookGraphQL implements GraphQLMutationResolver, GraphQLQueryResolver {[m
+[31m-[m
+[31m-    public Optional<Book> findBook(String isbn) {[m
+[31m-    	Author guilherme = new Author();[m
+[31m-    	guilherme.setEmail("gmsdev04@icloud.com");[m
+[31m-    	guilherme.setFullname("Guilherme Maciel Siqueira");[m
+[31m-    	guilherme.setId(1L);[m
+[31m-    	[m
+[31m-    	Book meuLivro = new Book();[m
+[31m-    	meuLivro.setActive(true);[m
+[31m-    	meuLivro.setAuthor(guilherme);[m
+[31m-    	meuLivro.setCreatedAt(LocalDate.now());[m
+[31m-    	meuLivro.setId(1L);[m
+[31m-    	meuLivro.setSubject("A volta dos que não foram");[m
+[31m-    	meuLivro.setTitle("Sem sentido");[m
+[31m-    	[m
+[31m-    	return Optional.of(meuLivro);[m
+[31m-    }[m
+[31m-[m
+[31m-    public Book createBook(Book book, String email) {[m
+[31m-    	Author guilherme = new Author();[m
+[31m-    	guilherme.setEmail("gmsdev04@icloud.com");[m
+[31m-    	guilherme.setFullname("Guilherme Maciel Siqueira");[m
+[31m-    	guilherme.setId(1L);[m
+[31m-    	[m
+[31m-    	Book meuLivro = new Book();[m
+[31m-    	meuLivro.setActive(true);[m
+[31m-    	meuLivro.setAuthor(guilherme);[m
+[31m-    	meuLivro.setCreatedAt(LocalDate.now());[m
+[31m-    	meuLivro.setId(1L);[m
+[31m-    	meuLivro.setSubject("A volta dos que não foram");[m
+[31m-    	meuLivro.setTitle("Sem sentido");[m
+[31m-    [m
+[31m-    	return meuLivro;[m
+[31m-    }[m
+[31m-[m
+[31m-}[m
+[1mdiff --git a/src/main/java/br/next/core/resolvers/author/query/AuthorResolver.java b/src/main/java/br/next/core/resolvers/author/query/AuthorResolver.java[m
+[1mnew file mode 100644[m
+[1mindex 0000000..c44d5bc[m
+[1m--- /dev/null[m
+[1m+++ b/src/main/java/br/next/core/resolvers/author/query/AuthorResolver.java[m
+[36m@@ -0,0 +1,16 @@[m
+[32m+[m[32mpackage br.next.core.resolvers.author.query;[m
+[32m+[m
+[32m+[m[32mimport org.springframework.stereotype.Component;[m
+[32m+[m
+[32m+[m[32mimport com.coxautodev.graphql.tools.GraphQLResolver;[m
+[32m+[m
+[32m+[m[32mimport br.next.core.model.Author;[m
+[32m+[m
+[32m+[m[32m@Component[m
+[32m+[m[32mpublic class AuthorResolver implements GraphQLResolver<Author>{[m
+[32m+[m[41m	[m
+[32m+[m	[32mpublic String getDescricao(Author parent) {[m
+[32m+[m		[32mreturn parent.getFullname() + " " + parent.getEmail();[m
+[32m+[m	[32m}[m
+[32m+[m[41m	[m
+[32m+[m[32m}[m[41m	[m
+[1mdiff --git a/src/main/java/br/next/core/resolvers/book/mutation/BookMutation.java b/src/main/java/br/next/core/resolvers/book/mutation/BookMutation.java[m
+[1mnew file mode 100644[m
+[1mindex 0000000..86a4c7a[m
+[1m--- /dev/null[m
+[1m+++ b/src/main/java/br/next/core/resolvers/book/mutation/BookMutation.java[m
+[36m@@ -0,0 +1,31 @@[m
+[32m+[m[32mpackage br.next.core.resolvers.book.mutation;[m
+[32m+[m
+[32m+[m[32mimport java.time.LocalDate;[m
+[32m+[m
+[32m+[m[32mimport org.springframework.stereotype.Component;[m
+[32m+[m
+[32m+[m[32mimport com.coxautodev.graphql.tools.GraphQLMutationResolver;[m
+[32m+[m
+[32m+[m[32mimport br.next.core.model.Author;[m
+[32m+[m[32mimport br.next.core.model.Book;[m
+[32m+[m
+[32m+[m[32m@Component[m
+[32m+[m[32mpublic class BookMutation implements GraphQLMutationResolver {[m
+[32m+[m[41m	[m
+[32m+[m	[32m public Book createBook(Book book, String email) {[m
+[32m+[m	[41m    [m	[32mAuthor guilherme = new Author();[m
+[32m+[m	[41m    [m	[32mguilherme.setEmail("gmsdev04@icloud.com");[m
+[32m+[m	[41m    [m	[32mguilherme.setFullname("Guilherme Maciel Siqueira");[m
+[32m+[m	[41m    [m	[32mguilherme.setId(1L);[m
+[32m+[m[41m	    	[m
+[32m+[m	[41m    [m	[32mBook meuLivro = new Book();[m
+[32m+[m	[41m    [m	[32mmeuLivro.setActive(true);[m
+[32m+[m	[41m    [m	[32mmeuLivro.setAuthor(guilherme);[m
+[32m+[m	[41m    [m	[32mmeuLivro.setCreatedAt(LocalDate.now());[m
+[32m+[m	[41m    [m	[32mmeuLivro.setId(1L);[m
+[32m+[m	[41m    [m	[32mmeuLivro.setSubject("A volta dos que não foram");[m
+[32m+[m	[41m    [m	[32mmeuLivro.setTitle("Sem sentido");[m
+[32m+[m[41m	    [m
+[32m+[m	[41m    [m	[32mreturn meuLivro;[m
+[32m+[m	[32m    }[m
+[32m+[m[32m}[m
+[1mdiff --git a/src/main/java/br/next/core/resolvers/book/query/BookQuery.java b/src/main/java/br/next/core/resolvers/book/query/BookQuery.java[m
+[1mnew file mode 100644[m
+[1mindex 0000000..89ebf50[m
+[1m--- /dev/null[m
+[1m+++ b/src/main/java/br/next/core/resolvers/book/query/BookQuery.java[m
+[36m@@ -0,0 +1,31 @@[m
+[32m+[m[32mpackage br.next.core.resolvers.book.query;[m
+[32m+[m
+[32m+[m[32mimport java.time.LocalDate;[m
+[32m+[m[32mimport java.util.Optional;[m
+[32m+[m
+[32m+[m[32mimport org.springframework.stereotype.Component;[m
+[32m+[m
+[32m+[m[32mimport com.coxautodev.graphql.tools.GraphQLQueryResolver;[m
+[32m+[m
+[32m+[m[32mimport br.next.core.model.Author;[m
+[32m+[m[32mimport br.next.core.model.Book;[m
+[32m+[m
+[32m+[m[32m@Component[m
+[32m+[m[32mpublic class BookQuery implements GraphQLQueryResolver{[m
+[32m+[m	[32mpublic Optional<Book> findBook(String isbn) {[m
+[32m+[m[41m    [m	[32mAuthor guilherme = new Author();[m
+[32m+[m[41m    [m	[32mguilherme.setEmail("gmsdev04@icloud.com");[m
+[32m+[m[41m    [m	[32mguilherme.setFullname("Guilherme Maciel Siqueira");[m
+[32m+[m[41m    [m	[32mguilherme.setId(1L);[m
+[32m+[m[41m    	[m
+[32m+[m[41m    [m	[32mBook meuLivro = new Book();[m
+[32m+[m[41m    [m	[32mmeuLivro.setActive(true);[m
+[32m+[m[41m    [m	[32mmeuLivro.setAuthor(guilherme);[m
+[32m+[m[41m    [m	[32mmeuLivro.setCreatedAt(LocalDate.now());[m
+[32m+[m[41m    [m	[32mmeuLivro.setId(1L);[m
+[32m+[m[41m    [m	[32mmeuLivro.setSubject("A volta dos que não foram");[m
+[32m+[m[41m    [m	[32mmeuLivro.setTitle("Algum titulo");[m
+[32m+[m[41m    	[m
+[32m+[m[41m    [m	[32mreturn Optional.of(meuLivro);[m
+[32m+[m[32m    }[m
+[32m+[m[32m}[m
+[1mdiff --git a/src/main/java/br/next/core/resolvers/BookResolver.java b/src/main/java/br/next/core/resolvers/book/query/BookResolver.java[m
+[1msimilarity index 60%[m
+[1mrename from src/main/java/br/next/core/resolvers/BookResolver.java[m
+[1mrename to src/main/java/br/next/core/resolvers/book/query/BookResolver.java[m
+[1mindex 97098b0..940e56a 100644[m
+[1m--- a/src/main/java/br/next/core/resolvers/BookResolver.java[m
+[1m+++ b/src/main/java/br/next/core/resolvers/book/query/BookResolver.java[m
+[36m@@ -1,7 +1,6 @@[m
+[31m-package br.next.core.resolvers;[m
+[32m+[m[32mpackage br.next.core.resolvers.book.query;[m
+ [m
+ import java.util.concurrent.CompletableFuture;[m
+[31m-import java.util.concurrent.CompletionStage;[m
+ import java.util.concurrent.ExecutorService;[m
+ [m
+ import org.springframework.stereotype.Component;[m
+[36m@@ -16,9 +15,15 @@[m [mimport lombok.RequiredArgsConstructor;[m
+ public class BookResolver implements GraphQLResolver<Book>{[m
+ [m
+ 	private final ExecutorService executor;[m
+[31m-[m
+[31m-	public CompletableFuture<String> getChiclete(Book parent) {[m
+[31m-[m
+[32m+[m[41m	[m
+[32m+[m	[32m//DataFetchingEnvironment env[m
+[32m+[m	[32mpublic CompletableFuture<String> getCampoApiUm(Book parent) {[m
+[32m+[m[41m		[m
+[32m+[m		[32m//GET HEADERS SE PERCISO[m
+[32m+[m		[32m//GraphQLContext context =  env.getContext();[m
+[32m+[m		[32m//HttpServletRequest headers = context.getHttpServletRequest().get();[m
+[32m+[m[41m        [m
+[32m+[m		[32m//ASYNC[m
+ 		return CompletableFuture.supplyAsync(() ->{[m
+ 			try {[m
+ 				Thread.sleep(200l);[m
+[36m@@ -26,11 +31,13 @@[m [mpublic class BookResolver implements GraphQLResolver<Book>{[m
+ 				// TODO Auto-generated catch block[m
+ 				e.printStackTrace();[m
+ 			}[m
+[31m-			return "Push";[m
+[32m+[m			[32mreturn "Um";[m
+ 		} ,executor);[m
+ 	}[m
+ [m
+[31m-	public CompletionStage<String> getAbacate(Book parent) {[m
+[32m+[m	[32mpublic CompletableFuture<String> getCampoApiDois(Book parent) {[m
+[32m+[m[41m		[m
+[32m+[m		[32m//ASYNC[m
+ 		return CompletableFuture.supplyAsync(() -> {[m
+ 			try {[m
+ 				Thread.sleep(200l);[m
+[36m@@ -38,9 +45,13 @@[m [mpublic class BookResolver implements GraphQLResolver<Book>{[m
+ 				// TODO Auto-generated catch block[m
+ 				e.printStackTrace();[m
+ 			}[m
+[31m-[m
+[31m-			return "verde";[m
+[32m+[m			[32mreturn "Dois";[m
+ 		}, executor);[m
+ 	}[m
+[31m-[m
+[32m+[m[41m	[m
+[32m+[m[41m	[m
+[32m+[m	[32mpublic String getCampoComputado(Book parent) {[m
+[32m+[m		[32mreturn parent.getTitle() + "-" + parent.getSubject();[m
+[32m+[m	[32m}[m
+[32m+[m[41m	[m
+ }[m
+[1mdiff --git a/src/main/resources/application.properties b/src/main/resources/application.properties[m
+[1mindex 8b13789..e69de29 100644[m
+[1m--- a/src/main/resources/application.properties[m
+[1m+++ b/src/main/resources/application.properties[m
+[36m@@ -1 +0,0 @@[m
+[31m-[m
+[1mdiff --git a/src/main/resources/graphqls/Types.graphqls b/src/main/resources/graphqls/Types.graphqls[m
+[1mindex f942393..7ea6abc 100644[m
+[1m--- a/src/main/resources/graphqls/Types.graphqls[m
+[1m+++ b/src/main/resources/graphqls/Types.graphqls[m
+[36m@@ -1,7 +1,9 @@[m
+ type Author {[m
+[31m-    fullname: String,[m
+[32m+[m	[32mid: String![m
+[32m+[m[32m    fullname: String[m
+     email: String[m
+     books: [Book][m
+[32m+[m[32m    descricao: String[m
+ }[m
+ [m
+ type Book {[m
+[36m@@ -9,6 +11,7 @@[m [mtype Book {[m
+     title: String![m
+     subject: String![m
+     author: Author![m
+[31m-    chiclete: String[m
+[31m-    abacate: String[m
+[32m+[m[32m    campoApiUm: String[m
+[32m+[m[32m    campoApiDois: String[m
+[32m+[m[32m    campoComputado: String[m
+ }[m
+\ No newline at end of file[m

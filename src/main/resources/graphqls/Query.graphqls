@@ -1,3 +1,4 @@
 type Query {
     findBook(isbn: String): Book
+    listAll: [Book]
 }

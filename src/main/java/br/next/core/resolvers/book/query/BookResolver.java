@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import com.coxautodev.graphql.tools.GraphQLResolver;
 
 import br.next.core.model.Book;
+import br.next.core.services.SomeApi;
 import lombok.RequiredArgsConstructor;
 
 @Component
@@ -15,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 public class BookResolver implements GraphQLResolver<Book>{
 
 	private final ExecutorService executor;
+	private final SomeApi api;
 	
 	//DataFetchingEnvironment env
 	public CompletableFuture<String> getCampoApiUm(Book parent) {
@@ -25,13 +27,7 @@ public class BookResolver implements GraphQLResolver<Book>{
         
 		//ASYNC
 		return CompletableFuture.supplyAsync(() ->{
-			try {
-				Thread.sleep(200l);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			return "Um";
+			return api.resquestApi(200l,"Response API UM");
 		} ,executor);
 	}
 
@@ -39,13 +35,7 @@ public class BookResolver implements GraphQLResolver<Book>{
 		
 		//ASYNC
 		return CompletableFuture.supplyAsync(() -> {
-			try {
-				Thread.sleep(200l);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			return "Dois";
+			return api.resquestApi(200l,"Response API DOIS");
 		}, executor);
 	}
 	
