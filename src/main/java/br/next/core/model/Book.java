@@ -15,10 +15,12 @@ public class Book {
     private Author author;
     private LocalDate createdAt = LocalDate.now();
     private boolean active = true;
-    private String chiclete;
-    private String abacate;
+    private String campoApiUm;
+    private String campoApiDois;
+    private String campoComputado;
     
     public Book() {
     	this.isbn = UUID.randomUUID().toString();
     }
+   
 }

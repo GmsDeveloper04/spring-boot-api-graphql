@@ -1,7 +1,6 @@
-package br.next.core.resolvers;
+package br.next.core.resolvers.book.query;
 
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutorService;
 
 import org.springframework.stereotype.Component;
@@ -16,9 +15,15 @@ import lombok.RequiredArgsConstructor;
 public class BookResolver implements GraphQLResolver<Book>{
 
 	private final ExecutorService executor;
-
-	public CompletableFuture<String> getChiclete(Book parent) {
-
+	
+	//DataFetchingEnvironment env
+	public CompletableFuture<String> getCampoApiUm(Book parent) {
+		
+		//GET HEADERS SE PERCISO
+		//GraphQLContext context =  env.getContext();
+		//HttpServletRequest headers = context.getHttpServletRequest().get();
+        
+		//ASYNC
 		return CompletableFuture.supplyAsync(() ->{
 			try {
 				Thread.sleep(200l);
@@ -26,11 +31,13 @@ public class BookResolver implements GraphQLResolver<Book>{
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			return "Push";
+			return "Um";
 		} ,executor);
 	}
 
-	public CompletionStage<String> getAbacate(Book parent) {
+	public CompletableFuture<String> getCampoApiDois(Book parent) {
+		
+		//ASYNC
 		return CompletableFuture.supplyAsync(() -> {
 			try {
 				Thread.sleep(200l);
@@ -38,9 +45,13 @@ public class BookResolver implements GraphQLResolver<Book>{
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-
-			return "verde";
+			return "Dois";
 		}, executor);
 	}
-
+	
+	
+	public String getCampoComputado(Book parent) {
+		return parent.getTitle() + "-" + parent.getSubject();
+	}
+	
 }

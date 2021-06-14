@@ -1,7 +1,9 @@
 type Author {
-    fullname: String,
+	id: String!
+    fullname: String
     email: String
     books: [Book]
+    descricao: String
 }
 
 type Book {
@@ -9,6 +11,7 @@ type Book {
     title: String!
     subject: String!
     author: Author!
-    chiclete: String
-    abacate: String
+    campoApiUm: String
+    campoApiDois: String
+    campoComputado: String
 }
