@@ -20,8 +20,8 @@ public class BookQuery implements GraphQLQueryResolver{
 	private final BookService service;
 	
 	public Optional<Book> findBook(String isbn) {
-    	return service.findBook(isbn);
-    }
+    		return service.findBook(isbn);
+    	}
 	
 	
 	public List<Book> listAll(){
